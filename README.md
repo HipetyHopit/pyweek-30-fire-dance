@@ -1,29 +1,35 @@
-# README #
+Untitled
+===============
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Entry in PyWeek #30  <https://pyweek.org/30/>
+Team: Pieter Kok 
 
-### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+DEPENDENCIES
+++++++++++++
 
-### How do I get set up? ###
+You might need to install some of these before running the game:
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+    Python:     http://www.python.org/
+    pyglet:     http://pyglet.org/
+                https://pyglet.readthedocs.io/en/latest/
 
-### Contribution guidelines ###
+RUNNING THE GAME
+++++++++++++++++
 
-* Writing tests
-* Code review
-* Other guidelines
+On Windows or Mac OS X, locate the "run.py" file and double-click it.
 
-### Who do I talk to? ###
+Othewise open a terminal / console and "cd" to the game directory and run:
 
-* Repo owner or admin
-* Other community or team contact
+```
+ $ python3 run.py
+```
+
+
+HOW TO PLAY
++++++++++++
+
+- Move using the arrow keys.
+- Jump using SPACE.
+- Click to aim and throw the coconut.
+- ESCAPE reloads the level.
