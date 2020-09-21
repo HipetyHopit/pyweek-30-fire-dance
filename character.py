@@ -9,7 +9,7 @@ from pyglet.window import key
 
 # Game constants.
 SPRITE_SCALING = 4
-GRAVITY = 0
+GRAVITY = 98 # px/s^2
 
 # Path constants.
 SPRITE_PATH = "data/images/sprites/"
@@ -38,19 +38,7 @@ class Character(pyglet.sprite.Sprite):
         self.v_x = 0.0
         self.v_y = 0.0
         
-    def update(self, dt, gameState):
-        
-        if (gameState["keys"][key.UP]):
-            self.v_y += self.ACCELERATION*dt
-        if (gameState["keys"][key.DOWN]):
-            self.v_y -= self.ACCELERATION*dt
-        if (gameState["keys"][key.LEFT]):
-            self.v_x -= self.ACCELERATION*dt
-        if (gameState["keys"][key.RIGHT]):
-            self.v_x += self.ACCELERATION*dt
-         
-        if (abs(self.v_x) > self.MOVE_SPEED):
-            self.v_x *= self.MOVE_SPEED/abs(self.v_x)
+    def update(self, dt):
          
         self.x += self.v_x * dt
         self.y += self.v_y * dt
