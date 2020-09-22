@@ -6,13 +6,7 @@ Character class.
 import pyglet
 from pyglet.gl import *
 from pyglet.window import key
-
-# Game constants.
-SPRITE_SCALING = 4
-GRAVITY = 98 # px/s^2
-
-# Path constants.
-SPRITE_PATH = "data/images/sprites/"
+from constants import *
 
 # OpenGl
 glEnable(GL_TEXTURE_2D)
@@ -20,26 +14,51 @@ glEnable(GL_TEXTURE_2D)
 class Character(pyglet.sprite.Sprite):
     """ Character class. """
     
-    def __init__(self, name):
+    def __init__(self, name, numStates = 1, x = 0, y = GROUNDLEVEL):
         
         # Load resources
         image = pyglet.image.load(SPRITE_PATH + name + ".png")
-        spriteSheet = pyglet.image.TextureGrid(pyglet.image.ImageGrid(image, 2, 1))
+        self.spriteSheet = pyglet.image.TextureGrid(
+            pyglet.image.ImageGrid(image, 4, numStates))
         
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST) 
-        spriteSheet[0].width *= SPRITE_SCALING
-        spriteSheet[0].height *= SPRITE_SCALING
+        for i in range(len(self.spriteSheet)):
+            self.spriteSheet[i].width *= SPRITE_SCALING
+            self.spriteSheet[i].height *= SPRITE_SCALING
         
-        super(Character, self).__init__(spriteSheet[0])
+        super(Character, self).__init__(self.spriteSheet[(3, 0)])
         
         # Attributes.
-        self.MOVE_SPEED = 200 # px/s
-        self.ACCELERATION = 200 # px/s^2
+        self.x = x
+        self.y = y
         self.v_x = 0.0
         self.v_y = 0.0
+        self.direction = 3
+        self.state = 0
         
     def update(self, dt):
          
-        self.x += self.v_x * dt
-        self.y += self.v_y * dt
+        self.x += self.v_x*dt
+        self.y += self.v_y*dt
         
+        self.v_y -= GRAVITY*dt
+        
+        if (self.v_y > 0 and self.direction != 1):
+            self.setDirection(1)
+        elif (self.v_y < -50. and self.direction != 2):
+            self.setDirection(2)
+        
+        if (self.y < GROUNDLEVEL):
+            self.v_y = 0.
+            self.y = GROUNDLEVEL
+        
+    def set_v(self, v_x, v_y):
+        
+        self.v_x = v_x
+        if (self.y == GROUNDLEVEL):
+            self.v_y = v_y
+        
+    def setDirection(self, direction):
+        
+        self.direction = direction % 4
+        self.image = self.spriteSheet[(self.direction, self.state)]

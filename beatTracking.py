@@ -6,12 +6,7 @@ Track beats.
 import numpy as np
 from scipy.io import wavfile
 from scipy.signal import decimate, find_peaks
-
-# Constants
-GAMMA = 100
-N = 1024
-H = 512
-K = 4096
+from constants import *
 
 logCompress = lambda x: np.log(1 + GAMMA*abs(x))
 halfWaveRect = lambda x: (x + abs(x))/2.
@@ -119,6 +114,37 @@ def loadWav(f):
         x = decimate(x, 2)
     
     return x, Fs
+
+def getMoves(track = "disco.00000.wav", levels = 2, interval = 1.):
+    """
+    Return an array of beat positions at which moves should occur.
+    
+    Keyword arguments:
+    track -- the file name of the track for which to generate moves.
+        (default  = "disco.00000.wav") 
+    levels -- the number of increasing levels of granulity to 
+        generate moves for. (default = 2) 
+    interval -- th minimum interval between level 1 moves (s). 
+        (default = 1.) 
+        
+    Returns:
+    moves -- an array of move positions in time (s).
+    """
+    
+    x, Fs = loadWav(SONGS_PATH + track)
+    
+    X = abs(spectrogram(x))
+    novelty = temporalDerivative(logCompress(X))
+    mu = localAverage(novelty, 100)
+    novelty = halfWaveRect(novelty - mu)
+    
+    moves = []
+    
+    for i in range(levels):
+        moves += find_peaks(novelty, 
+                            distance = int(interval*Fs/(H*levels)))*H/Fs
+        
+    return moves
 
 if (__name__ == "__main__"):
     
