@@ -4,6 +4,7 @@ Score class.
 """
 
 import pyglet
+from labelList import LabelList
 from constants import *
 
 class Score(pyglet.text.Label):
@@ -18,13 +19,16 @@ class Score(pyglet.text.Label):
         y -- y position.
         """
         
-        super(Score, self).__init__("50%", font_name = "Papyrus", font_size = 36, 
-                                    x = x, y = y)
+        super(Score, self).__init__("100%", font_name = "Papyrus", 
+                                    font_size = 36, x = x, y = y)
         
         self.tp = 0.
         self.fp = 0
         self.fn = 0
+        self.precision = 1.
+        self.recall = 1.
         self.accuracy = 0.
+        self.total = 0.
         
     def reset(self):
         """ Reset the score. """
@@ -32,28 +36,58 @@ class Score(pyglet.text.Label):
         self.tp = 0.
         self.fp = 0
         self.fn = 0
+        self.precision = 1.
+        self.recall = 1.
         self.accuracy = 0.
+        self.total = 0.
         
     def updateScore(self):
         """ Update the score. """
         
         if (self.tp > 0 or self.fp > 0):
-            precision = self.tp/(self.tp + self.fp)
-        else:
-            precision = 0.5
+            self.precision = self.tp*100./(self.tp + self.fp)
             
         if (self.tp > 0 or self.fn > 0):
-            recall = self.tp/(self.tp + self.fn)
+            self.recall = self.tp*100./(self.tp + self.fn)
+        
+        if (self.precision + self.recall > 0):
+            f1 = 2*self.precision*self.recall/(self.precision + self.recall)
         else:
-            recall  = 0.5
-            
-        f1 = 2*precision*recall/(precision + recall)
+            f1 = 0
         
         if (self.tp > 0):
-            score = (self.accuracy/self.tp + f1)*100./2.
-            self.text = str(score)+"%"  #("%.2f%" % score)
+            self.total = (self.accuracy/self.tp + f1)/2.
+        else:
+            self.total = f1
+            
+        self.text = ("%.2f%%" % self.total)
         
-        print (precision, recall, f1)
+        #print (precision, recall, f1)
+        
+    def getResults(self):
+        
+        labels = []
+        results = []
+        
+        labels += ["Hits:"]
+        labels += ["Misses:"]
+        labels += ["Precision:"]
+        labels += ["Recall:"]
+        labels += ["Accuracy:"]
+        labels += ["Total:"]
+        
+        results += ["%d" % self.tp]
+        results += ["%d" % (self.fp + self.fn)]
+        results += ["%.2f%%" % self.precision]
+        results += ["%.2f%%" % self.recall]
+        if (self.accuracy > 0):
+            results += ["%.2f%%" % (self.accuracy/self.tp)]
+        else :
+            results += ["0%"]
+        results += ["%.2f%%" % self.total]
+        
+        return (LabelList(labels, self.x, self.y, anchor_x = "left"), 
+                LabelList(results, self.x + 100, self.y, anchor_x = "right"))
         
     def checkTP(self, arrows, direction):
         """
@@ -69,11 +103,14 @@ class Score(pyglet.text.Label):
           
         for i in range(4, len(arrows)):
             if (arrows[direction].getCollide(arrows[i])):
-                self.accuracy += (abs(arrows[i].y - arrows[direction].y)/
-                                  arrows[direction].height)
+                a = (1 - abs(arrows[i].y - arrows[direction].y)/
+                     arrows[direction].height)
+                self.accuracy += a*100.
                 arrows[i].deactivate()
                 self.tp += 1
                 collide = True
+                
+                break
                 
         if (not collide):
            self.fp += 1

@@ -26,6 +26,15 @@ GROUNDLEVEL = 128
 OFFSET_BUFFER = 100
 POISSON_SCALING = 100
 
+# Intro constants.
+INTRO_TEXT = ["Dave has been stranded for so long;",
+              "a castaway on a desolate island.",
+              "He has long ago given up counting days.",
+              "His mind is starting to slip...",
+              "The coconut has developed a personality.",
+              "And at night the fire requires the strange",
+              "ritual of DANCE to keep the darkness at bay."]
+
 # Beat tracking constants
 GAMMA = 100
 N = 1024

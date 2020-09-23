@@ -14,11 +14,13 @@ from events import MarkovEvent
 from score import Score
 from constants import *
 from levelGeneration import *
+from labelList import LabelList
 
 # States
 INTRO = 0
 MENU = 1
 GAME = 2
+SCORE = 3
 
 # Turn off image scaling interpolation.
 glEnable(GL_TEXTURE_2D)
@@ -64,6 +66,14 @@ class GameWindow(pyglet.window.Window):
         self.background.color = (255, 255, 255)
         
         self.score = Score(x = LEFT_POS + 5*SPACING, y = TOP_POS)
+        self.results = self.score.getResults()
+        
+        # Intro setup.
+        self.intro = LabelList(INTRO_TEXT, x = 64, y = WINDOW_HEIGHT - 64, 
+                               spacing = 30, anchor_x = "left", 
+                               anchor_y = "top", font_size = 20)
+        
+        # Menu setup.
         
         # Music player.
         self.player = pyglet.media.Player()
@@ -79,10 +89,8 @@ class GameWindow(pyglet.window.Window):
                 
         self.events = [CoconutJump(5.)]
         
-        # Start game
-        
-        self.state = GAME   # Temp
-        self.startGame()
+        # Start.
+        self.state = INTRO
         
     def startGame(self, song = "disco.00000.wav", difficulty = 2):
         """
@@ -93,9 +101,13 @@ class GameWindow(pyglet.window.Window):
         difficulty -- the level difficulty. (defualt = 2)
         """
         
+        if (self.state == GAME):
+            return
+        
         # TODO add song.
         # TODO add difficulty.
         
+        self.state = GAME
         self.arrows = self.arrows[:4]
         
         # Temp
@@ -113,10 +125,18 @@ class GameWindow(pyglet.window.Window):
         
         self.player.play()
         
+        @self.player.event
+        def on_player_eos():
+            
+            self.state = SCORE
+            self.results = self.score.getResults()
+            self.results[0].setPos(128, WINDOW_HEIGHT/2)
+            self.results[1].setPos(WINDOW_WIDTH - 128, WINDOW_HEIGHT/2)
+        
     def update(self, dt):
         """ Update game objects. """
         
-        if (self.state == MENU or self.state == GAME):
+        if (self.state == MENU or self.state == GAME or self.state == SCORE):
             self.background.update()
             for c in self.characters:
                 c.update(dt) 
@@ -131,9 +151,12 @@ class GameWindow(pyglet.window.Window):
         
         self.clear()
         
-        self.background.draw()
+        if (self.state == INTRO):
+            self.intro.draw()
         
-        if (self.state == MENU or self.state == GAME):
+        if (self.state == MENU or self.state == GAME or self.state == SCORE):
+            self.background.draw()
+            
             for c in self.characters:
                 c.draw() 
         
@@ -143,6 +166,10 @@ class GameWindow(pyglet.window.Window):
             for a in self.arrows[:4]:
                 a.draw() 
             self.score.draw()
+            
+        if (self.state == SCORE):
+            self.results[0].draw()
+            self.results[1].draw()
         
     def on_key_press(self, symbol, modifiers):
         """ Handle key press events. """
@@ -165,6 +192,9 @@ class GameWindow(pyglet.window.Window):
         
         if (symbol == key.ESCAPE):
             self.on_close()
+            
+        if (symbol == key.ENTER):
+            self.startGame()    # Temp, should go to menu.
         
         # Test arrows.
         for i in range(4):
