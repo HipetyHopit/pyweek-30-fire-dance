@@ -25,8 +25,15 @@ class Character(pyglet.sprite.Sprite):
         for i in range(len(self.spriteSheet)):
             self.spriteSheet[i].width *= SPRITE_SCALING
             self.spriteSheet[i].height *= SPRITE_SCALING
+            
+        self.animations = []
+        for i in range(4):
+            animation = pyglet.image.Animation.from_image_sequence(
+                self.spriteSheet[i*numStates:(i+1)*numStates], duration = 0.2, 
+                loop = True)
+            self.animations += [animation]
         
-        super(Character, self).__init__(self.spriteSheet[(3, 0)])
+        super(Character, self).__init__(self.animations[3])
         
         # Attributes.
         self.x = x
@@ -61,4 +68,4 @@ class Character(pyglet.sprite.Sprite):
     def setDirection(self, direction):
         
         self.direction = direction % 4
-        self.image = self.spriteSheet[(self.direction, self.state)]
+        self.image = self.animations[self.direction]

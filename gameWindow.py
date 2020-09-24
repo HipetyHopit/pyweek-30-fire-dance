@@ -53,8 +53,9 @@ class GameWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(self.update, 1./60.)     
         
         # Game object setup.
-        coconut = Character("coconut", x = 680)
-        self.characters = [coconut]
+        self.coconut = Character("coconut", x = 680)
+        self.castaway = Character("castaway", x = 64, numStates = 3)
+        self.characters = [self.coconut, self.castaway]
         
         self.arrows = []
         for i in range(4):
@@ -78,14 +79,17 @@ class GameWindow(pyglet.window.Window):
         # Music player.
         self.player = pyglet.media.Player()
         self.player.pause()
+        self.player.volume = 0. # 0.5 TODO set default volume
 
         # Events.
+        windowHandle = self
+        
         class CoconutJump(MarkovEvent):
             """ Make the coconut jump every now and then. """
             
             def execute(self, dt):
                 MarkovEvent.execute(self, dt)
-                coconut.set_v(0., 70.)
+                windowHandle.coconut.set_v(0., 70.)
                 
         self.events = [CoconutJump(5.)]
         
@@ -173,19 +177,29 @@ class GameWindow(pyglet.window.Window):
         
     def on_key_press(self, symbol, modifiers):
         """ Handle key press events. """
-        
-        if (self.state == GAME):
-            
-            # Test arrows.
-            for i in range(4):
-                if (symbol == ARROW_KEYS[i]):
-                    self.arrows[i].updateState(2)
-                    self.score.checkTP(self.arrows, i)
+           
+        # Test arrows.
+        for i in range(4):
+            if (symbol == ARROW_KEYS[i]):
+                self.castaway.setDirection(i)
+                self.arrows[i].updateState(2)
                 
+                if (self.state == GAME):
+                    self.score.checkTP(self.arrows, i)
+            
+        # Screenshot.
         if (symbol == key.F2):
             screenshot = pyglet.image.get_buffer_manager().get_color_buffer()
             shotTime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             screenshot.save(SCREENSHOTS_PATH + shotTime + ".png")
+            
+        # Volume control. 
+        # NOTE Weird rounding method seems necissary to prevent
+        # invalid volumes.
+        if (symbol == key.F3 and self.player.volume > 0.):
+            self.player.volume = (int(self.player.volume*10) - 1)/10.
+        if (symbol == key.F4 and self.player.volume < 1.):
+            self.player.volume = (int(self.player.volume*10) + 1)/10.
             
     def on_key_release(self, symbol, modifiers):
         """ Handle key release events. """
