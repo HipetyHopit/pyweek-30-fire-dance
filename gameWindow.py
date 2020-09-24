@@ -3,6 +3,7 @@
 Main game class.
 """
 
+import os
 import pyglet
 from pyglet.window import key
 from pyglet.gl import *
@@ -63,18 +64,52 @@ class GameWindow(pyglet.window.Window):
                                   TOP_POS, i, state = 1)]
         
         self.background = backgroundSprite
-        self.background.color = (47, 15, 84)
-        self.background.color = (255, 255, 255)
+        self.background.color = WHITE[:3]
         
         self.score = Score(x = LEFT_POS + 5*SPACING, y = TOP_POS)
         self.results = self.score.getResults()
         
         # Intro setup.
         self.intro = LabelList(INTRO_TEXT, x = 64, y = WINDOW_HEIGHT - 64, 
-                               spacing = 30, anchor_x = "left", 
-                               anchor_y = "top", font_size = 20)
+                               spacing = MEDIUM_SPACING, anchor_x = "left", 
+                               anchor_y = "top", font_size = MEDIUM_FONT)
         
         # Menu setup.
+        self.songOptions = []
+        menuItems = []
+        for f in os.listdir(SONGS_PATH):
+            if (f.endswith(".wav")):
+                self.songOptions += [f]
+                menuItem = f[:-4]
+                if (len(menuItem) > MAX_ITEM_LEN):
+                    menuItem = menuItem[:MAX_ITEM_LEN] + "..."
+                menuItems += [menuItem]
+        self.songMenu = LabelList(menuItems, x = 64, y = WINDOW_HEIGHT - 128, 
+                                  spacing = MEDIUM_SPACING, anchor_x = "left", 
+                                  anchor_y = "top", font_size = MEDIUM_FONT, 
+                                  selected = 0, maxLabels = 10)
+        
+        singHeading = pyglet.text.Label("Song:", x = 64, y = WINDOW_HEIGHT - 64, 
+                                        anchor_x = "left", anchor_y = "top", 
+                                        font_size = LARGE_FONT, 
+                                        font_name = DEFAULT_FONT)
+        
+        self.difficultyMenu = LabelList(DIFFICULTY_LABELS, x = 512, 
+                                        y = WINDOW_HEIGHT - 128, 
+                                        anchor_y = "top", 
+                                        font_size = MEDIUM_FONT, selected = 2, 
+                                        focused = False, 
+                                        spacing = MEDIUM_SPACING)
+        
+        difficultyHeading = pyglet.text.Label("Difficulty:", x = 512, 
+                                              y = WINDOW_HEIGHT - 64, 
+                                              anchor_x = "left", 
+                                              anchor_y = "top", 
+                                              font_size = LARGE_FONT, 
+                                              font_name = DEFAULT_FONT)
+        
+        self.menu = [singHeading, self.songMenu, difficultyHeading, 
+                     self.difficultyMenu]
         
         # Music player.
         self.player = pyglet.media.Player()
@@ -163,6 +198,10 @@ class GameWindow(pyglet.window.Window):
             
             for c in self.characters:
                 c.draw() 
+                
+        if (self.state == MENU):
+            for m in self.menu:
+                m.draw()
         
         if (self.state == GAME):
             for a in self.arrows[4:]:
@@ -179,12 +218,11 @@ class GameWindow(pyglet.window.Window):
         """ Handle key press events. """
            
         # Test arrows.
-        for i in range(4):
-            if (symbol == ARROW_KEYS[i]):
-                self.castaway.setDirection(i)
-                self.arrows[i].updateState(2)
-                
-                if (self.state == GAME):
+        if (self.state == GAME):
+            for i in range(4):
+                if (symbol == ARROW_KEYS[i]):
+                    self.castaway.setDirection(i)
+                    self.arrows[i].updateState(2)
                     self.score.checkTP(self.arrows, i)
             
         # Screenshot.
@@ -208,12 +246,37 @@ class GameWindow(pyglet.window.Window):
             self.on_close()
             
         if (symbol == key.ENTER):
-            self.startGame()    # Temp, should go to menu.
+            
+            if (self.state == INTRO):
+                self.state = MENU
+            elif (self.state == MENU):
+                self.startGame()    # Temp, should go to menu.
+            elif (self.state == SCORE):
+                self.state = MENU
         
         # Test arrows.
-        for i in range(4):
-            if (symbol == ARROW_KEYS[i]):
-                self.arrows[i].updateState(1)
+        if (self.state == MENU):
+            if (symbol == ARROW_KEYS[1]):
+                if (self.songMenu.focused):
+                    self.songMenu.decSelect()
+                else:
+                    self.difficultyMenu.decSelect()
+            if (symbol == ARROW_KEYS[2]):
+                if (self.songMenu.focused):
+                    self.songMenu.incSelect()
+                else:
+                    self.difficultyMenu.incSelect()
+            if (symbol == ARROW_KEYS[0] or symbol == ARROW_KEYS[3]):
+                if (self.songMenu.focused):
+                    self.songMenu.setFocused(False)
+                    self.difficultyMenu.setFocused(True)
+                else:
+                    self.songMenu.setFocused(True)
+                    self.difficultyMenu.setFocused(False)
+        elif (self.state == GAME):
+            for i in range(4):
+                if (symbol == ARROW_KEYS[i]):
+                    self.arrows[i].updateState(1)
             
     def on_close(self):
         """ Handle close event. """

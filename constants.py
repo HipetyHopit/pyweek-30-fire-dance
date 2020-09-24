@@ -17,6 +17,15 @@ LEFT_POS = 256
 TOP_POS = WINDOW_HEIGHT - 96
 SPACING = 96
 
+# Menu constants.
+MAX_ITEM_LEN = 24
+DEFAULT_FONT = "Papyrus"
+LARGE_FONT = 36
+MEDIUM_FONT = 20
+LARGE_SPACING = 70
+MEDIUM_SPACING = 30
+DIFFICULTY_LABELS = ["Random chaos", "Easy", "Medium", "Hard", "Expert"]
+
 # Sprite constants.
 SPRITE_SCALING = 2
 GRAVITY = 98 # px/s^2
@@ -25,6 +34,12 @@ GROUNDLEVEL = 128
 # Level constants.
 OFFSET_BUFFER = 100
 POISSON_SCALING = 100
+
+# Colour constants.
+NIGHT = (47, 15, 84, 255)
+WHITE = (255, 255, 255, 255)
+BLACK = (0, 0, 0, 255)
+GREY = (128, 128, 128, 255)
 
 # Intro constants.
 INTRO_TEXT = ["Dave has been stranded for so long;",

@@ -19,8 +19,8 @@ class Score(pyglet.text.Label):
         y -- y position.
         """
         
-        super(Score, self).__init__("100%", font_name = "Papyrus", 
-                                    font_size = 36, x = x, y = y)
+        super(Score, self).__init__("100%", font_name = DEFAULT_FONT, 
+                                    font_size = LARGE_FONT, x = x, y = y)
         
         self.tp = 0.
         self.fp = 0
