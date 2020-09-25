@@ -8,7 +8,7 @@ from pyglet.window import key
 # Game constants.
 WINDOW_WIDTH = 960
 WINDOW_HEIGHT = 640
-GAME_TITLE = "Untitled"
+GAME_TITLE = "Fire Dance"
 
 ARROW_KEYS = [key.LEFT, key.UP, key.DOWN, key.RIGHT]
 
@@ -44,20 +44,25 @@ TRANSITION_MATRIX = [[0.2, 0.2, 0.3, 0.3],
 
 LEVELS_1 = 1
 SPEED_1 = 200
-LEVELS_2 = 2
+INTERVAL_1 = 1.
+LEVELS_2 = 1
 SPEED_2 = 200
-LEVELS_3 = 3
-SPEED_3 = 300
+INTERVAL_2 = 0.5
+LEVELS_3 = 2
+SPEED_3 = 200
+INTERVAL_3 = 0.5
 LEVELS_4 = 3
-SPEED_4 = 400
+SPEED_4 = 300
+INTERVAL_4 = 0.5
 INTERVAL_RANDOM = 0.2
-SPEED_RANDOM = 400
+SPEED_RANDOM = 300
 
 # Colour constants.
 NIGHT = (47, 15, 84, 255)
 WHITE = (255, 255, 255, 255)
 BLACK = (0, 0, 0, 255)
 GREY = (128, 128, 128, 255)
+FADE_RATE = 1.  # /s
 
 # Intro constants.
 INTRO_TEXT = ["Dave has been stranded for so long;",

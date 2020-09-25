@@ -6,9 +6,52 @@ The background image.
 import pyglet
 from constants import *
 
-image = pyglet.image.load(IMAGE_PATH + "island.png")
-spriteSheet = pyglet.image.TextureGrid(pyglet.image.ImageGrid(image, 1, 1))
-animation = pyglet.image.Animation.from_image_sequence(spriteSheet, 
+class Background(pyglet.sprite.Sprite):
+    """ Background class. """
+    
+    def __init__(self):
+        
+        # Load resources
+        image = pyglet.image.load(IMAGE_PATH + "island.png")
+        grid = pyglet.image.ImageGrid(image, 1, 1)
+        spriteSheet = pyglet.image.TextureGrid(grid)
+        animation = pyglet.image.Animation.from_image_sequence(spriteSheet, 
                                                        duration = 0.1, 
                                                        loop = True)
-backgroundSprite = pyglet.sprite.Sprite(animation)
+        
+        super(Background, self).__init__(animation)
+        
+        # Colour.
+        self.color = BLACK[:3]
+        self.newColour = BLACK[:3]
+        self.oldColour = BLACK[:3]
+        self.fade = 1.
+        
+    def update(self, dt):
+        """ Update background. """
+        
+        if (self.fade < 1.):
+            self.fade += FADE_RATE*dt
+            if (self.fade > 1.):
+                self.fade = 1
+            R = int(self.newColour[0]*self.fade+self.oldColour[0]*(1-self.fade))
+            G = int(self.newColour[1]*self.fade+self.oldColour[1]*(1-self.fade))
+            B = int(self.newColour[2]*self.fade+self.oldColour[2]*(1-self.fade))
+            self.color = (R, G, B)
+        else:
+            #self.color = self.newColour
+            self.fade = 1.
+            
+    def setFade(self, colour):
+        """
+        Set colour to fade to.
+        
+        Keyword arguments:
+        colour -- RGB colour tupple.
+        """
+        
+        self.oldColour = self.color
+        self.newColour = colour
+        self.fade = 0.
+        
+        print (self.color, self.oldColour, self.newColour)

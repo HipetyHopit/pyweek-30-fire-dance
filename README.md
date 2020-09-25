@@ -9,9 +9,11 @@ Dependencies
 
 You might need to install some of these before running the game:
 
-    Python:     http://www.python.org/
-    pyglet:     http://pyglet.org/
-                https://pyglet.readthedocs.io/en/latest/
+    Python (recommended 3.8.0):     http://www.python.org/
+    pyglet (recommended 3.8.0):     http://pyglet.org/
+                                    https://pyglet.readthedocs.io/
+    NumPy (recommended 1.18.4):     https://numpy.org/
+    Scipy (recommended 1.4.1):      https://scipy.org/
 
 Running the game
 ++++++++++++++++
@@ -40,8 +42,8 @@ Adding new songs
     quicker on subsequent plays.
 - The new song should now be selectable when the game is launched.
 
-Licensing
-+++++++++
+License
++++++++
 
 The provided songs were taken from the 
 [musdb18 dataset](https://sigsep.github.io/datasets/musdb.htm). The 
@@ -50,7 +52,7 @@ licensed under Creative Commons (BY-NC-SA 4.0). The tracks were
 converted to .wav format. The addapted tracks are distributed here
 under the same license.
 
-### List of tracks and license
+### List of tracks and licenses
 
 - Aimee Norwich - Child, Singer/Songwriter, MedleyDB, CC BY-NC-SA
 - AvaLuna - Waterduct, Rock, MedleyDB, CC BY-NC-SA

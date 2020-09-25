@@ -117,7 +117,7 @@ def loadWav(f):
     
     return x, Fs
 
-def getMoves(track = "disco.00000.wav", levels = 2, interval = 1.):
+def getMoves(track = "disco.00000.wav", levels = 2, interval = 0.5):
     """
     Return an array of beat positions at which moves should occur.
     
@@ -127,7 +127,7 @@ def getMoves(track = "disco.00000.wav", levels = 2, interval = 1.):
     levels -- the number of increasing levels of granulity to 
         generate moves for. (default = 2) 
     interval -- th minimum interval between level 1 moves (s). 
-        (default = 1.) 
+        (default = 0.5) 
         
     Returns:
     moves -- an array of move positions in time (s).
@@ -151,9 +151,15 @@ def getMoves(track = "disco.00000.wav", levels = 2, interval = 1.):
     moves = []
     for i in range(levels):
         peaks = find_peaks(novelty, 
-                           distance = int(interval*Fs/(H*levels)))[0]*H/Fs
+                           distance = int(interval*Fs/(H*(i + 1))))[0]*H/Fs
         moves += peaks.tolist()
     moves.sort()
+    
+    #moves = []
+    #for i in range(levels):
+        #peaks = find_peaks(novelty, height = 0.6-0.2*i)[0]*H/Fs
+        #moves += peaks.tolist()
+    #moves.sort()
      
     return moves
 

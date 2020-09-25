@@ -10,7 +10,7 @@ from pyglet.gl import *
 from datetime import datetime
 from character import Character
 from arrows import Arrow
-from background import backgroundSprite
+from background import Background
 from events import MarkovEvent
 from score import Score
 from constants import *
@@ -45,6 +45,8 @@ class GameWindow(pyglet.window.Window):
         self.set_mouse_visible(False)
         self.set_size(WINDOW_WIDTH, WINDOW_HEIGHT)
         self.set_caption(GAME_TITLE)
+        icon = pyglet.image.load(IMAGE_PATH + "icon.png")
+        self.set_icon(icon)
         
         self.loopHandle = eventLoop
         
@@ -65,8 +67,7 @@ class GameWindow(pyglet.window.Window):
             self.arrows += [Arrow(LEFT_POS + i * SPACING, 
                                   TOP_POS, i, state = 1)]
         
-        self.background = backgroundSprite
-        self.background.color = WHITE[:3]
+        self.background = Background()
         
         self.score = Score(x = LEFT_POS + 5*SPACING, y = TOP_POS)
         self.results = self.score.getResults()
@@ -155,6 +156,8 @@ class GameWindow(pyglet.window.Window):
         arrows, trackStartOffset = getLevel(song, self.difficultyMenu.selected)
         self.arrows += arrows
         
+        self.background.setFade(NIGHT[:3])
+        
         # Queue song.
         source = pyglet.media.load(SONGS_PATH + song)
         self.player.queue(source)
@@ -182,7 +185,7 @@ class GameWindow(pyglet.window.Window):
             return
         
         if (self.state == MENU or self.state == GAME or self.state == SCORE):
-            self.background.update()
+            self.background.update(dt)
             for c in self.characters:
                 c.update(dt) 
         
@@ -263,6 +266,7 @@ class GameWindow(pyglet.window.Window):
                 pyglet.clock.unschedule(self.playSong)
                 self.state = MENU
                 self.prompt.text = START_TEXT
+                self.background.setFade(WHITE[:3])
             else:
                 self.on_close()
             
@@ -271,12 +275,14 @@ class GameWindow(pyglet.window.Window):
             if (self.state == INTRO):
                 self.state = MENU
                 self.prompt.text = START_TEXT
+                self.background.setFade(WHITE[:3])
             elif (self.state == MENU):
                 self.prompt.text = LOAD_TEXT
                 pyglet.clock.schedule_once(self.startGame, 0.5)
             elif (self.state == SCORE):
                 self.state = MENU
                 self.prompt.text = START_TEXT
+                self.background.setFade(WHITE[:3])
         
         # Test arrows.
         if (self.state == MENU):

@@ -83,16 +83,16 @@ def getLevel(song, difficulty):
     """
 
     if (difficulty == 1):
-        moves = getMoves(track = song, levels = LEVELS_1)
+        moves = getMoves(track = song, levels = LEVELS_1, interval = INTERVAL_1)
         arrows, startOffset = mapMovesToArrows(moves, SPEED_1)
     elif (difficulty == 2):
-        moves = getMoves(track = song, levels = LEVELS_2)
+        moves = getMoves(track = song, levels = LEVELS_2, interval = INTERVAL_2)
         arrows, startOffset = mapMovesToArrows(moves, SPEED_2)
     elif (difficulty == 3):
-        moves = getMoves(track = song, levels = LEVELS_3)
+        moves = getMoves(track = song, levels = LEVELS_3, interval = INTERVAL_3)
         arrows, startOffset = mapMovesToArrows(moves, SPEED_3)
     elif (difficulty == 4):
-        moves = getMoves(track = song, levels = LEVELS_4)
+        moves = getMoves(track = song, levels = LEVELS_4, interval = INTERVAL_4)
         arrows, startOffset = mapMovesToArrows(moves, SPEED_4)
     else:
         Fs, x = wavfile.read(SONGS_PATH + song)
