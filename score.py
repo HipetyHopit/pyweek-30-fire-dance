@@ -19,7 +19,7 @@ class Score(pyglet.text.Label):
         y -- y position.
         """
         
-        super(Score, self).__init__("100%", font_name = DEFAULT_FONT, 
+        super(Score, self).__init__("0.00%", font_name = DEFAULT_FONT, 
                                     font_size = LARGE_FONT, x = x, y = y)
         
         self.tp = 0.
@@ -29,6 +29,8 @@ class Score(pyglet.text.Label):
         self.recall = 1.
         self.accuracy = 0.
         self.total = 0.
+        
+        self.text = ("%.2f%%" % self.total)
         
     def reset(self):
         """ Reset the score. """
@@ -40,6 +42,8 @@ class Score(pyglet.text.Label):
         self.recall = 1.
         self.accuracy = 0.
         self.total = 0.
+        
+        self.text = ("%.2f%%" % self.total)
         
     def updateScore(self):
         """ Update the score. """
@@ -55,10 +59,15 @@ class Score(pyglet.text.Label):
         else:
             f1 = 0
         
-        if (self.tp > 0):
-            self.total = (self.accuracy/self.tp + f1)/2.
+        #if (self.tp > 0):
+            #self.total = (self.accuracy*100./self.tp + f1)/2.
+        #else:
+            #self.total = f1
+          
+        if (self.accuracy > 0):
+            self.total = self.accuracy*f1/self.tp
         else:
-            self.total = f1
+            self.total = 0.
             
         self.text = ("%.2f%%" % self.total)
         
@@ -81,7 +90,7 @@ class Score(pyglet.text.Label):
         results += ["%.2f%%" % self.precision]
         results += ["%.2f%%" % self.recall]
         if (self.accuracy > 0):
-            results += ["%.2f%%" % (self.accuracy/self.tp)]
+            results += ["%.2f%%" % (self.accuracy*100./self.tp)]
         else :
             results += ["0%"]
         results += ["%.2f%%" % self.total]
@@ -105,7 +114,7 @@ class Score(pyglet.text.Label):
             if (arrows[direction].getCollide(arrows[i])):
                 a = (1 - abs(arrows[i].y - arrows[direction].y)/
                      arrows[direction].height)
-                self.accuracy += a*100.
+                self.accuracy += a
                 arrows[i].deactivate()
                 self.tp += 1
                 collide = True

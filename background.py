@@ -4,7 +4,7 @@ The background image.
 """
 
 import pyglet
-from arrows import IMAGE_PATH
+from constants import *
 
 image = pyglet.image.load(IMAGE_PATH + "island.png")
 spriteSheet = pyglet.image.TextureGrid(pyglet.image.ImageGrid(image, 1, 1))

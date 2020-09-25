@@ -25,6 +25,9 @@ MEDIUM_FONT = 20
 LARGE_SPACING = 70
 MEDIUM_SPACING = 30
 DIFFICULTY_LABELS = ["Random chaos", "Easy", "Medium", "Hard", "Expert"]
+PROMPT_TEXT = "(Press ENTER)"
+START_TEXT = "Press ENTER to start"
+LOAD_TEXT = "Generating..."
 
 # Sprite constants.
 SPRITE_SCALING = 2
@@ -34,6 +37,21 @@ GROUNDLEVEL = 128
 # Level constants.
 OFFSET_BUFFER = 100
 POISSON_SCALING = 100
+TRANSITION_MATRIX = [[0.2, 0.2, 0.3, 0.3],
+                     [0.3, 0.2, 0.2, 0.3],
+                     [0.3, 0.2, 0.2, 0.3],
+                     [0.3, 0.3, 0.2, 0.2]]
+
+LEVELS_1 = 1
+SPEED_1 = 200
+LEVELS_2 = 2
+SPEED_2 = 200
+LEVELS_3 = 3
+SPEED_3 = 300
+LEVELS_4 = 3
+SPEED_4 = 400
+INTERVAL_RANDOM = 0.2
+SPEED_RANDOM = 400
 
 # Colour constants.
 NIGHT = (47, 15, 84, 255)
@@ -61,3 +79,4 @@ SONGS_PATH = "songs/"
 SPRITE_PATH = "data/images/sprites/"
 IMAGE_PATH = "data/images/"
 SCREENSHOTS_PATH = "data/screenshots/"
+TEMP_PATH = "data/temp/"

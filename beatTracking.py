@@ -4,6 +4,7 @@ Track beats.
 """
 
 import numpy as np
+from pathlib import Path
 from scipy.io import wavfile
 from scipy.signal import decimate, find_peaks
 from constants import *
@@ -112,6 +113,7 @@ def loadWav(f):
         
     if (Fs > 22050):
         x = decimate(x, 2)
+        Fs /= 2
     
     return x, Fs
 
@@ -133,17 +135,26 @@ def getMoves(track = "disco.00000.wav", levels = 2, interval = 1.):
     
     x, Fs = loadWav(SONGS_PATH + track)
     
-    X = abs(spectrogram(x))
-    novelty = temporalDerivative(logCompress(X))
-    mu = localAverage(novelty, 100)
-    novelty = halfWaveRect(novelty - mu)
+    saveAs = TEMP_PATH + track + ".npy"
+    f = Path(saveAs)
+    if (f.is_file()):
+        novelty = np.load(f)
+    else:
+        
+        X = abs(spectrogram(x))
+        novelty = temporalDerivative(logCompress(X))
+        mu = localAverage(novelty, 100)
+        novelty = halfWaveRect(novelty - mu)
+        novelty = novelty/max(novelty)
+        np.save(saveAs, novelty)
     
     moves = []
-    
     for i in range(levels):
-        moves += find_peaks(novelty, 
-                            distance = int(interval*Fs/(H*levels)))*H/Fs
-        
+        peaks = find_peaks(novelty, 
+                           distance = int(interval*Fs/(H*levels)))[0]*H/Fs
+        moves += peaks.tolist()
+    moves.sort()
+     
     return moves
 
 if (__name__ == "__main__"):
@@ -154,7 +165,7 @@ if (__name__ == "__main__"):
     x, Fs = loadWav("songs/disco.00000.wav")
     #x, Fs = loadWav("songs/Clara Berry And Wooldog - Air Traffic.stem.wav")
     
-    x = x#[:Fs*3]
+    x = x[:int(Fs*3)]
     
     # Plot waveform.
     

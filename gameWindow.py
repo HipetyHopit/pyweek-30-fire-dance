@@ -42,7 +42,7 @@ class GameWindow(pyglet.window.Window):
 
         # Window setup.
         #self.set_exclusive_mouse()
-        #self.set_mouse_visible(False)
+        self.set_mouse_visible(False)
         self.set_size(WINDOW_WIDTH, WINDOW_HEIGHT)
         self.set_caption(GAME_TITLE)
         
@@ -50,13 +50,15 @@ class GameWindow(pyglet.window.Window):
         
         self.keys = pyglet.window.key.KeyStateHandler()
         self.push_handlers(self.keys)
+        self.updateSuppress = False
         
         pyglet.clock.schedule_interval(self.update, 1./60.)     
         
         # Game object setup.
         self.coconut = Character("coconut", x = 680)
         self.castaway = Character("castaway", x = 64, numStates = 3)
-        self.characters = [self.coconut, self.castaway]
+        self.fire = Character("fire", x = 720, numStates = 3)
+        self.characters = [self.coconut, self.castaway, self.fire]
         
         self.arrows = []
         for i in range(4):
@@ -73,6 +75,12 @@ class GameWindow(pyglet.window.Window):
         self.intro = LabelList(INTRO_TEXT, x = 64, y = WINDOW_HEIGHT - 64, 
                                spacing = MEDIUM_SPACING, anchor_x = "left", 
                                anchor_y = "top", font_size = MEDIUM_FONT)
+        self.prompt = pyglet.text.Label(PROMPT_TEXT, x = WINDOW_WIDTH - 64, 
+                                        y = 64, anchor_x = "right", 
+                                        anchor_y = "baseline", 
+                                        font_size = MEDIUM_FONT, 
+                                        font_name = DEFAULT_FONT)
+        self.fire.setDirection(2)
         
         # Menu setup.
         self.songOptions = []
@@ -114,7 +122,7 @@ class GameWindow(pyglet.window.Window):
         # Music player.
         self.player = pyglet.media.Player()
         self.player.pause()
-        self.player.volume = 0. # 0.5 TODO set default volume
+        self.player.volume = 1.
 
         # Events.
         windowHandle = self
@@ -131,27 +139,20 @@ class GameWindow(pyglet.window.Window):
         # Start.
         self.state = INTRO
         
-    def startGame(self, song = "disco.00000.wav", difficulty = 2):
-        """
-        Start a new game level.
-        
-        Keyword arguments:
-        song -- the song name for the level.
-        difficulty -- the level difficulty. (defualt = 2)
-        """
+    def startGame(self, dt):
+        """ Start a new game level. """
         
         if (self.state == GAME):
             return
         
-        # TODO add song.
-        # TODO add difficulty.
-        
         self.state = GAME
         self.arrows = self.arrows[:4]
+        self.score.reset()
+        song = self.songOptions[self.songMenu.selected]
         
-        # Temp
-        moves = getRandomMoves(30)
-        arrows, trackStartOffset = mapMovesToArrows(moves, 200)
+        # Generate level.
+        self.updateSuppress = True
+        arrows, trackStartOffset = getLevel(song, self.difficultyMenu.selected)
         self.arrows += arrows
         
         # Queue song.
@@ -168,12 +169,17 @@ class GameWindow(pyglet.window.Window):
         def on_player_eos():
             
             self.state = SCORE
+            self.prompt.text = PROMPT_TEXT
             self.results = self.score.getResults()
             self.results[0].setPos(128, WINDOW_HEIGHT/2)
             self.results[1].setPos(WINDOW_WIDTH - 128, WINDOW_HEIGHT/2)
         
     def update(self, dt):
         """ Update game objects. """
+        
+        if (self.updateSuppress):
+            self.updateSuppress = False
+            return
         
         if (self.state == MENU or self.state == GAME or self.state == SCORE):
             self.background.update()
@@ -184,6 +190,9 @@ class GameWindow(pyglet.window.Window):
             for a in self.arrows:
                 a.update(dt)
             self.score.checkFN(self.arrows)
+            fireState = int(self.score.total/25.)
+            if (self.fire.direction != fireState):
+                self.fire.setDirection(fireState)
 
     def on_draw(self):
         """ Handle draw events. """
@@ -192,6 +201,7 @@ class GameWindow(pyglet.window.Window):
         
         if (self.state == INTRO):
             self.intro.draw()
+            self.fire.draw()
         
         if (self.state == MENU or self.state == GAME or self.state == SCORE):
             self.background.draw()
@@ -213,6 +223,9 @@ class GameWindow(pyglet.window.Window):
         if (self.state == SCORE):
             self.results[0].draw()
             self.results[1].draw()
+            
+        if (self.state != GAME):
+            self.prompt.draw()
         
     def on_key_press(self, symbol, modifiers):
         """ Handle key press events. """
@@ -243,16 +256,27 @@ class GameWindow(pyglet.window.Window):
         """ Handle key release events. """
         
         if (symbol == key.ESCAPE):
-            self.on_close()
+            
+            if (self.state == GAME or self.state == SCORE):
+                self.player.pause()
+                self.player.next_source()
+                pyglet.clock.unschedule(self.playSong)
+                self.state = MENU
+                self.prompt.text = START_TEXT
+            else:
+                self.on_close()
             
         if (symbol == key.ENTER):
             
             if (self.state == INTRO):
                 self.state = MENU
+                self.prompt.text = START_TEXT
             elif (self.state == MENU):
-                self.startGame()    # Temp, should go to menu.
+                self.prompt.text = LOAD_TEXT
+                pyglet.clock.schedule_once(self.startGame, 0.5)
             elif (self.state == SCORE):
                 self.state = MENU
+                self.prompt.text = START_TEXT
         
         # Test arrows.
         if (self.state == MENU):
