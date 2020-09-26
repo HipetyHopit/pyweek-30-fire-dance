@@ -36,7 +36,20 @@ def getRandomMoves(duration, interval = 0.5):
     
     return moves
 
-def mapMovesToArrows(moves, speed, offset = TOP_POS):
+def mapMovesToArrows(moves, speed, batch, offset = TOP_POS):
+    """
+    Map move times to Arrows witch positions.
+    
+    Keyword arguments:
+    moves -- an array of move times.
+    speed -- the arrow speeds.
+    batch -- sprite batch for arrows.
+    offset -- a start offset. (default = TOP_OFFSET)
+    
+    Returns:
+    arrows -- a list of Arrow objects.
+    startOffest -- the offset for starting the track
+    """
     
     arrows = []
     
@@ -62,20 +75,21 @@ def mapMovesToArrows(moves, speed, offset = TOP_POS):
         lastDirection = direction
         
         arrows += [Arrow(LEFT_POS + direction * SPACING, y, direction, 
-                         state = 0, v = speed)]
+                         batch = batch, state = 0, v = speed)]
         
         if (startOffset == 0.):
             startOffset = dy/speed
        
     return arrows, startOffset
 
-def getLevel(song, difficulty):
+def getLevel(song, difficulty, batch):
     """
     Generate a new game level.
         
     Keyword arguments:
     song -- the song name for the level.
-    difficulty -- the level difficulty. (defualt = 2)
+    difficulty -- the level difficulty.
+    bacth -- sprite batch for arrows.
     
     Returns:
     arrows -- an array of arrow objects.
@@ -84,20 +98,20 @@ def getLevel(song, difficulty):
 
     if (difficulty == 1):
         moves = getMoves(track = song, levels = LEVELS_1, interval = INTERVAL_1)
-        arrows, startOffset = mapMovesToArrows(moves, SPEED_1)
+        arrows, startOffset = mapMovesToArrows(moves, SPEED_1, batch)
     elif (difficulty == 2):
         moves = getMoves(track = song, levels = LEVELS_2, interval = INTERVAL_2)
-        arrows, startOffset = mapMovesToArrows(moves, SPEED_2)
+        arrows, startOffset = mapMovesToArrows(moves, SPEED_2, batch)
     elif (difficulty == 3):
         moves = getMoves(track = song, levels = LEVELS_3, interval = INTERVAL_3)
-        arrows, startOffset = mapMovesToArrows(moves, SPEED_3)
+        arrows, startOffset = mapMovesToArrows(moves, SPEED_3, batch)
     elif (difficulty == 4):
         moves = getMoves(track = song, levels = LEVELS_4, interval = INTERVAL_4)
-        arrows, startOffset = mapMovesToArrows(moves, SPEED_4)
+        arrows, startOffset = mapMovesToArrows(moves, SPEED_4, batch)
     else:
         Fs, x = wavfile.read(SONGS_PATH + song)
         T = len(x)/Fs
         moves = getRandomMoves(T, INTERVAL_RANDOM)
-        arrows, startOffset = mapMovesToArrows(moves, SPEED_RANDOM)
+        arrows, startOffset = mapMovesToArrows(moves, SPEED_RANDOM, batch)
     
     return arrows, startOffset

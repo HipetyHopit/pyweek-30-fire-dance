@@ -9,13 +9,26 @@ from constants import *
 class Arrow(pyglet.sprite.Sprite):
     """ Arrow class. """
     
-    def __init__(self, x, y, orientation, state = 0, v = 0.):
+    def __init__(self, x, y, orientation, batch, state = 0, v = 0.):
+        """
+        Constructor.
+        
+        Keyword arguments:
+        x -- x position.
+        y -- y position.
+        orientation -- facing direction.
+        batch -- sprite batch to draw with.
+        state -- state of moving (0), being passive (2) or being 
+            pressed (1). (default = 0)
+        v -- move speed (px/s). (default = 0.)
+        """
         
         # Load resources
         image = pyglet.image.load(IMAGE_PATH + "arrows.png")
         self.spriteSheet = pyglet.image.ImageGrid(image, 3, 4)
         
-        super(Arrow, self).__init__(self.spriteSheet[(state, orientation)])
+        super(Arrow, self).__init__(self.spriteSheet[(state, orientation)], 
+                                    batch = batch)
         
         self.v = v
         self.x = x
@@ -65,3 +78,4 @@ class Arrow(pyglet.sprite.Sprite):
         """ Deactivate the arrow. """
         
         self.active = False
+        self.visible = False

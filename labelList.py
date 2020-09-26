@@ -12,6 +12,22 @@ class LabelList:
                  font_name = DEFAULT_FONT, font_size = LARGE_FONT, 
                  anchor_x = "left", anchor_y = "center", selected = None, 
                  focused = True, maxLabels = None):
+        """
+        Constructor.
+        
+        Keyword arguments:
+        labels -- a list of labels.
+        x -- x position. (default = 0)
+        y -- y position. (default = 0)
+        spacing -- spacing between items. (default  = LARGE_SPACING)
+        font_name -- the font name. (default  = DEFAULT_FONT)
+        font_size -- the font size. (default  = LARGE_FONT)
+        anchor_x -- the x anchor. (default  = "left")
+        anchor_y -- the y anchor. (default  = "center")
+        selected -- the selected item. (default  = None)
+        focused -- wheteher the list is in focus. (default  = True)
+        maxLabels -- the maximum items to display. (default  = None)
+        """
         
         self.x = x
         self.y = y
@@ -55,6 +71,12 @@ class LabelList:
                 self.labels[self.selected].color = GREY
                 
     def setSelect(self, n):
+        """
+        Set selected item.
+        
+        Keyword arguments:
+        n -- the index of the selected item.
+        """
         
         self.labels[self.selected].color = WHITE
         self.selected = n % len(self.labels)
@@ -66,12 +88,22 @@ class LabelList:
         self.page = self.selected // self.maxLabels
         
     def incSelect(self):
+        """ Increase the selection. """
+        
         self.setSelect(self.selected + 1)
         
     def decSelect(self):
+        """ Decrease the selection. """
+        
         self.setSelect(self.selected - 1)
         
     def setFocused(self, focused):
+        """
+        Set wheteher the list is in focus.
+        
+        Keyword arguments:
+        focused -- whether the list is in focus.
+        """
     
         self.focused = focused
     
@@ -81,6 +113,14 @@ class LabelList:
             self.labels[self.selected].color = GREY
          
     def setPos(self, x, y):
+        """
+        Set the list's position.
+        
+        Keyword arguments:
+        focused -- whether the list is in focus.
+        x -- x position.
+        y -- y position.
+        """
         
         self.x = x
         self.y = y

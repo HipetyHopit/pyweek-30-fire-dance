@@ -15,6 +15,16 @@ class Character(pyglet.sprite.Sprite):
     """ Character class. """
     
     def __init__(self, name, numStates = 1, x = 0, y = GROUNDLEVEL):
+        """
+        Constructor.
+        
+        Keyword arguments:
+        name -- the character name.
+        numStates -- the number of frames per direction in the sprite
+            sheet.
+        x -- x position.
+        y -- y position. (default = GROUNDLEVEL)
+        """
         
         # Load resources
         image = pyglet.image.load(SPRITE_PATH + name + ".png")
@@ -44,6 +54,7 @@ class Character(pyglet.sprite.Sprite):
         self.state = 0
         
     def update(self, dt):
+        """ Update the character. """
          
         self.x += self.v_x*dt
         self.y += self.v_y*dt
@@ -60,12 +71,25 @@ class Character(pyglet.sprite.Sprite):
             self.y = GROUNDLEVEL
         
     def set_v(self, v_x, v_y):
+        """
+        Set move speed.
+        
+        Keyword arguments:
+        v_x -- horizontal move speed.
+        v_y -- vertical move speed.
+        """
         
         self.v_x = v_x
         if (self.y == GROUNDLEVEL):
             self.v_y = v_y
         
     def setDirection(self, direction):
+        """
+        Set facing direction.
+        
+        Keyword arguments:
+        direction -- the new direction to face.
+        """
         
         self.direction = direction % 4
         self.image = self.animations[self.direction]

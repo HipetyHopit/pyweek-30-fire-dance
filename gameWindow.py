@@ -63,9 +63,12 @@ class GameWindow(pyglet.window.Window):
         self.characters = [self.coconut, self.castaway, self.fire]
         
         self.arrows = []
+        self.targetBatch = pyglet.graphics.Batch()
+        self.arrowBatch = pyglet.graphics.Batch()
         for i in range(4):
             self.arrows += [Arrow(LEFT_POS + i * SPACING, 
-                                  TOP_POS, i, state = 1)]
+                                  TOP_POS, i, batch = self.targetBatch, 
+                                  state = 1)]
         
         self.background = Background()
         
@@ -153,7 +156,8 @@ class GameWindow(pyglet.window.Window):
         
         # Generate level.
         self.updateSuppress = True
-        arrows, trackStartOffset = getLevel(song, self.difficultyMenu.selected)
+        arrows, trackStartOffset = getLevel(song, self.difficultyMenu.selected, 
+                                            self.arrowBatch)
         self.arrows += arrows
         
         self.background.setFade(NIGHT[:3])
@@ -217,10 +221,8 @@ class GameWindow(pyglet.window.Window):
                 m.draw()
         
         if (self.state == GAME):
-            for a in self.arrows[4:]:
-                a.draw() 
-            for a in self.arrows[:4]:
-                a.draw() 
+            self.arrowBatch.draw()
+            self.targetBatch.draw()
             self.score.draw()
             
         if (self.state == SCORE):

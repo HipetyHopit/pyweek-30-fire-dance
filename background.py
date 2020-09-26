@@ -10,13 +10,14 @@ class Background(pyglet.sprite.Sprite):
     """ Background class. """
     
     def __init__(self):
+        """ Constuctor. """
         
         # Load resources
         image = pyglet.image.load(IMAGE_PATH + "island.png")
-        grid = pyglet.image.ImageGrid(image, 1, 1)
+        grid = pyglet.image.ImageGrid(image, 1, 4)
         spriteSheet = pyglet.image.TextureGrid(grid)
         animation = pyglet.image.Animation.from_image_sequence(spriteSheet, 
-                                                       duration = 0.1, 
+                                                       duration = 0.3, 
                                                        loop = True)
         
         super(Background, self).__init__(animation)
@@ -53,5 +54,3 @@ class Background(pyglet.sprite.Sprite):
         self.oldColour = self.color
         self.newColour = colour
         self.fade = 0.
-        
-        print (self.color, self.oldColour, self.newColour)
